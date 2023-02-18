@@ -1,3 +1,16 @@
+class Database:
+    def __init__(self) -> None:
+        self.businessOwners = []
+        self.users = []
+        self.admin = []
+        self.resellTicketList = []
+
+    def addAccount():
+        pass
+
+    def checkPassword():
+        pass
+
 class Account:
     def __init__(self, username, password) -> None:
         self.username = username
