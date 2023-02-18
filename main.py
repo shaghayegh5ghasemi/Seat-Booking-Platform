@@ -1,3 +1,5 @@
+import pickle
+
 class Database:
     def __init__(self) -> None:
         self.businessOwners = []
@@ -49,6 +51,13 @@ class BusinessOwner(Account):
         
 
 if __name__ == "__main__":
+    # load database ---------------------------------------
+    try:
+        database = pickle.load(open("database_file.pickle", "rb"))
+    except (OSError, IOError) as e:
+        database = Database()
+    # load database ---------------------------------------
+
     #  welcome pattern ---------------------------------------
     n, m = 15, 45
     for i in range(1,n,2):
@@ -61,4 +70,12 @@ if __name__ == "__main__":
     #  welcome pattern ---------------------------------------
     print()
     accountType = input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n')
+    if accountType == 1:
+        pass
+    elif accountType == 2:
+        pass
+    elif accountType == 3:
+        pass
+    else:
+        print("Wrong input! (Please enter 1 or 2 or 3)")
 
