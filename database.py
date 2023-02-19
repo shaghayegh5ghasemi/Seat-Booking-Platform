@@ -10,18 +10,18 @@ class Database:
     def search(self, accountList, username):
         for account in accountList:
             if account.username == username:
-                return True
-        return False
+                return True, account
+        return False, account
     
     def exist(self, accountType, username):
         result = False
         match accountType:
             case 1:
-                result = self.search(self.admin, username)
+                result, account = self.search(self.admin, username)
             case 2:
-                result = self.search(self.businessOwners, username)
+                result, account = self.search(self.businessOwners, username)
             case 3:
-                result = self.search(self.users, username)
+                result, account = self.search(self.users, username)
         return result
 
     def addAccount(self, accountType, newUser):
@@ -32,10 +32,23 @@ class Database:
                 self.businessOwners.append(newUser)
             case 3:
                 self.users.append(newUser)
-        
 
     def checkPassword(self, accountType, username, password):
-        return True
+        passwordMatch = False
+        match accountType:
+            case 1:
+                result, account = self.search(self.admin, username)
+                if account.password == password:
+                    passwordMatch = True
+            case 2:
+                result, account = self.search(self.businessOwners, username)
+                if account.password == password:
+                    passwordMatch = True
+            case 3:
+                result, account = self.search(self.users, username)
+                if account.password == password:
+                    passwordMatch = True
+        return passwordMatch
 
     def loadDB(self):
         try:
