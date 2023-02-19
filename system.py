@@ -4,17 +4,17 @@ class Account:
         self.password = password
         self.messages = {}
     
-    def sendMsg():
+    def sendMsg(self):
         pass
 
-    def viewMsg():
+    def viewMsg(self):
         pass
 
 class Admin(Account):
     def __init__(self, username, password) -> None:
         super().__init__(username, password)
     
-    def cancelUserTicket():
+    def cancelUserTicket(self):
         pass
 
 class User(Account):
@@ -22,7 +22,7 @@ class User(Account):
         super().__init__(username, password)
         self.balance = balance
     
-    def resellTicket():
+    def resellTicket(self):
         pass
 
 class BusinessOwner(Account):
@@ -31,7 +31,7 @@ class BusinessOwner(Account):
         self.revenue = 0
         self.rooms = []
     
-    def defineRoom(BusinessType, size, regularPrice):
+    def defineRoom(self, BusinessType, size, regularPrice):
         pass
 
 class Room:

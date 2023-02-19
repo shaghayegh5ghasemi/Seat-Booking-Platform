@@ -14,7 +14,7 @@ if __name__ == "__main__":
     # load database ---------------------------------------
 
     #  welcome pattern ---------------------------------------
-    n, m = 15, 45
+    n, m = 5, 25
     for i in range(1,n,2):
       print ('-'*int((m-i*3)/2)+'.|.'*i+'-'*int((m-i*3)/2))
 
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # log in ---------------------------------------
     print()
     
-    accountType = input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n')
+    accountType = int(input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n'))
     username = input('Please enter your username:\n')
     password = getpass.getpass()
 
@@ -35,14 +35,14 @@ if __name__ == "__main__":
     if newAccount == True:
         if accountType == 1:
             newUser = system.Admin(username, password)
-            database.addAccount(accountType, newUser)
+            db.addAccount(accountType, newUser)
         elif accountType == 2:
             newUser = system.BusinessOwner(username, password)
-            database.addAccount(accountType, newUser)
-        else:
+            db.addAccount(accountType, newUser)
+        elif accountType == 3:
             balance = input("What is your initial balance?\n")
             newUser = system.User(username, password, balance)
-            database.addAccount(accountType, newUser)
+            db.addAccount(accountType, newUser)
     else:
         authentication = db.checkPassword(accountType, username, password)
         if authentication == False:
