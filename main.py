@@ -30,7 +30,7 @@ class Application:
         password = getpass.getpass()
 
         newAccount = self.db.exist(accountType, username) # check if the user already exists or no
-        if newAccount == True:
+        if newAccount == False:
             if accountType == 1:
                 newUser = system.Admin(username, password)
                 self.db.addAccount(accountType, newUser)

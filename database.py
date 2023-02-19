@@ -1,4 +1,5 @@
 import pickle
+
 class Database:
     def __init__(self) -> None:
         self.admin = []
@@ -6,8 +7,22 @@ class Database:
         self.users = []
         self.resellTicketList = []
 
+    def search(self, accountList, username):
+        for account in accountList:
+            if account.username == username:
+                return True
+        return False
+    
     def exist(self, accountType, username):
-        return True
+        result = False
+        match accountType:
+            case 1:
+                result = self.search(self.admin, username)
+            case 2:
+                result = self.search(self.businessOwners, username)
+            case 3:
+                result = self.search(self.users, username)
+        return result
 
     def addAccount(self, accountType, newUser):
         match accountType:
