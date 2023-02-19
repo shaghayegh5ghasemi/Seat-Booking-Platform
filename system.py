@@ -4,7 +4,7 @@ class Account:
         self.password = password
         self.messages = {}
     
-    def sendMsg(self):
+    def sendMsg(self, db, accountList, destUsername, msg):
         pass
 
     def viewMsg(self):
@@ -48,10 +48,31 @@ class BusinessOwner(Account):
         pass
 
 class Room:
-    x = 1
+    def __init__(self, roomType, size, regularPrice) -> None:
+        self.roomType = roomType 
+        self.size = size
+        self.regularPrice = regularPrice
+        self. map = []
+    
+    def createRoomMap(self):
+        pass 
 
 class Ticket:
-    a = 2
+    def __init__(self, ticketID, username, roomType, seatDetail) -> None:
+        self.ticketID = ticketID
+        self.username = username
+        self.roomType = roomType
+        self.seatDetail = seatDetail
+    
+    def printTicket(self):
+        pass
 
-class Resell:
-    b = 3
+class Resale:
+    def __init__(self) -> None:
+        self.resaleList = []
+
+    def addResale(self):
+        pass
+
+    def removeResale(self):
+        pass

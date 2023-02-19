@@ -1,11 +1,12 @@
 import pickle
+import system
 
 class Database:
     def __init__(self) -> None:
         self.admin = []
         self.businessOwners = []
         self.users = []
-        self.resellTicketList = []
+        self.resaleTicketList = system.Resale()
 
     def search(self, accountList, username):
         for account in accountList:
