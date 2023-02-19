@@ -95,22 +95,24 @@ class Room:
             for elem in a:
                 print("{}".format(elem).rjust(3), end="")
             print(end="\n")
+        return f"Map of the {self.roomType} - {self.ownerID}"
 
 class Ticket:
-    def __init__(self, ownerID, ticketID, roomType, rows, columns, seatPrice) -> None:
+    def __init__(self, ownerID, ticketID, roomType, rows, columns, seatPrice, timeSLot) -> None:
         self.ownerID = ownerID # ticket owner
         self.ticketID = ticketID # business owner
         self.roomType = roomType
         self.rows = rows
         self.columns = columns
         self.seatPrice = seatPrice
+        self.timeSlot = timeSLot
 
     def ticketInfo(self):
         info = []
-        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Price"]
+        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Time Slot" "Price"]
         for i in range(len(self.rows)):
             temp = []
-            temp.append(i, self.ownerID, self.ticketID, self.roomType, self.rows[i], self.columns[i], self.seatPrice[i])
+            temp.append(i, self.ownerID, self.ticketID, self.roomType, self.rows[i], self.columns[i], self.timeSlot, self.seatPrice[i])
         
         return info, header
 

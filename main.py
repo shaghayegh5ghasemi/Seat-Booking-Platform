@@ -67,8 +67,8 @@ class Application:
 
     def sendToAll(self):
         pass
-    
-    def ViewMessage(self):
+
+    def viewMessage(self):
         pass
 
 
@@ -80,6 +80,10 @@ class Application:
         regularPrice = float(input('What is the regular price for seats?    '))
         timeSlot = input('What time slot will this room be available? (example of accepted answer: 2:30-4:05)    ')
         businessOwner.defineRoom(roomType, size, regularPrice, timeSlot)
+
+    # features for users
+    def reserveSeat(self):
+        pass
 
 if __name__ == "__main__":
     seatBookingApp = Application()
