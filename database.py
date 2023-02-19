@@ -5,11 +5,11 @@ class Database:
         self.admin = []
         self.resellTicketList = []
 
-    def exist(accountType, username):
+    def exist(self, accountType, username):
         return True
 
-    def addAccount(accountType, newUser):
-        pass
+    def addAccount(self, accountType, newUser):
+        return True
 
-    def checkPassword(accountType, username, password):
+    def checkPassword(self, accountType, username, password):
         return True
