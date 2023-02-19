@@ -1,16 +1,23 @@
 import pickle
 class Database:
     def __init__(self) -> None:
+        self.admin = []
         self.businessOwners = []
         self.users = []
-        self.admin = []
         self.resellTicketList = []
 
     def exist(self, accountType, username):
         return True
 
     def addAccount(self, accountType, newUser):
-        return True
+        match accountType:
+            case 1:
+                self.admin.append(newUser)
+            case 2:
+                self.businessOwners.append(newUser)
+            case 3:
+                self.users.append(newUser)
+        
 
     def checkPassword(self, accountType, username, password):
         return True

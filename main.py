@@ -54,7 +54,6 @@ class Application:
 
 if __name__ == "__main__":
     seatBookingApp = Application()
-
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
     accountType, username = seatBookingApp.signIn() # sign in 
@@ -67,7 +66,7 @@ if __name__ == "__main__":
             choice = int(input(seatBookingApp.eligibility[0]))
             match choice:
                 case 1: # sign out
-                    #seatBookingApp.db.saveDB(seatBookingApp.db)
+                    seatBookingApp.db.saveDB(seatBookingApp.db)
                     print("Thank you for choosing our platform! :)")
                     exit()
                 case 2: # view messages
@@ -80,7 +79,7 @@ if __name__ == "__main__":
             choice = int(input(seatBookingApp.eligibility[1]))
             match choice:
                 case 1: # sign out
-                    #seatBookingApp.db.saveDB(seatBookingApp.db)
+                    seatBookingApp.db.saveDB(seatBookingApp.db)
                     print("Thank you for choosing our platform! :)")
                     exit()
                 case 2: # view messages
@@ -91,7 +90,7 @@ if __name__ == "__main__":
             choice = int(input(seatBookingApp.eligibility[2]))
             match choice:
                 case 1: # sign out
-                    #seatBookingApp.db.saveDB(seatBookingApp.db)
+                    seatBookingApp.db.saveDB(seatBookingApp.db)
                     print("Thank you for choosing our platform! :)")
                     exit()
                 case 2: # view messages
