@@ -24,6 +24,7 @@ class Application:
             print ('-'*int((m-i*3)/2)+'.|.'*i+'-'*int((m-i*3)/2))
         print()
 
+    # common features between all account types
     def signIn(self):
         accountType = int(input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n'))
         username = input('Please enter your username:\n')
@@ -55,7 +56,30 @@ class Application:
         os.system('cls')
         print("Successfully logged in! :)")
         return accountType, account
+    
+    def signOut(self):
+        seatBookingApp.db.saveDB(self.db)
+        print("Thank you for choosing our platform! :)")
+        exit()
+    
+    def sendMessage(self):
+        pass
 
+    def sendToAll(self):
+        pass
+    
+    def ViewMessage(self):
+        pass
+
+
+    # features for business owners
+    def registerRoom(self, businessOwner):
+        print()
+        roomType = input('What business do you want this room for (Businees Type)?    ')
+        size = int(input('What is the desired size of the room?    '))
+        regularPrice = float(input('What is the regular price for seats?    '))
+        timeSlot = input('What time slot will this room be available? (example of accepted answer: 2:30-4:05)    ')
+        businessOwner.defineRoom(roomType, size, regularPrice, timeSlot)
 
 if __name__ == "__main__":
     seatBookingApp = Application()
@@ -71,9 +95,7 @@ if __name__ == "__main__":
             choice = int(input(seatBookingApp.eligibility[0]))
             match choice:
                 case 1: # sign out
-                    seatBookingApp.db.saveDB(seatBookingApp.db)
-                    print("Thank you for choosing our platform! :)")
-                    exit()
+                    seatBookingApp.signOut()
                 case 2: # view messages
                     pass
                 case 3: # send message
@@ -84,29 +106,23 @@ if __name__ == "__main__":
             choice = int(input(seatBookingApp.eligibility[1]))
             match choice:
                 case 1: # sign out
-                    seatBookingApp.db.saveDB(seatBookingApp.db)
-                    print("Thank you for choosing our platform! :)")
-                    exit()
+                    seatBookingApp.signOut()
                 case 2: # view messages
                     pass
                 case 3: # send message
                     pass
                 case 4: # define a new room
-                    print()
-                    roomType = input('What business do you want this room for (Businees Type)?  ')
-                    size = int(input('What is the desired size of the room? '))
-                    regularPrice = float(input('What is the regular price for seats?    '))
-                    account.defineRoom(roomType, size, regularPrice)
+                    seatBookingApp.registerRoom(account)
         else: # user domain
             choice = int(input(seatBookingApp.eligibility[2]))
             match choice:
                 case 1: # sign out
-                    seatBookingApp.db.saveDB(seatBookingApp.db)
-                    print("Thank you for choosing our platform! :)")
-                    exit()
+                    seatBookingApp.signOut()
                 case 2: # view messages
                     pass
                 case 3: # send message
+                    pass
+                case 4: # reserve a seat
                     pass
 
 

@@ -49,21 +49,22 @@ class BusinessOwner(Account):
         self.revenue = 0
         self.rooms = []
     
-    def defineRoom(self, roomType, size, regularPrice):
-        newRoom = Room(self.username, roomType, size, regularPrice)
+    def defineRoom(self, roomType, size, regularPrice, timeSlot):
+        newRoom = Room(self.username, roomType, size, regularPrice, timeSlot)
         self.rooms.append(newRoom)
     
     def updateRevenue(self, price):
         self.revenue = self.revenue + price
 
 class Room:
-    def __init__(self, ownerID, roomType, size, regularPrice) -> None:
+    def __init__(self, ownerID, roomType, size, regularPrice, timeSlot) -> None:
         self.ownerID = ownerID
         self.roomType = roomType 
         self.size = size
         self.regularPrice = regularPrice
         self.map = np.zeros((self.size, self.size), dtype=int)
         self.price = self.applyPrice()
+        self.timeSlot = timeSlot
 
     def applyPrice(self):
         price = np.full((self.size, self.size), self.regularPrice)
