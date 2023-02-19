@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from tabulate import tabulate
 
 class Account:
     def __init__(self, username, password) -> None:
@@ -24,6 +25,7 @@ class User(Account):
     def __init__(self, username, password, balance) -> None:
         super().__init__(username, password)
         self.balance = balance
+        self.tickets = []
     
     def reserve(self):
         pass
@@ -94,14 +96,30 @@ class Room:
             print(end="\n")
 
 class Ticket:
-    def __init__(self, ticketID, username, roomType, seatDetail) -> None:
-        self.ticketID = ticketID
-        self.username = username
+    def __init__(self, ownerID, ticketID, roomType, rows, columns, seatPrice) -> None:
+        self.ownerID = ownerID # ticket owner
+        self.ticketID = ticketID # business owner
         self.roomType = roomType
-        self.seatDetail = seatDetail
-    
+        self.rows = rows
+        self.columns = columns
+        self.seatPrice = seatPrice
+
+    def ticketInfo(self):
+        info = []
+        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Price"]
+        for i in range(len(self.rows)):
+            temp = []
+            temp.append(i, self.ownerID, self.ticketID, self.roomType, self.rows[i], self.columns[i], self.seatPrice[i])
+        
+        return info, header
+
     def printTicket(self):
-        pass
+        info, header = self.ticketInfo()
+        temp = np.array(info)
+        total = np.sum(temp[:, -1])
+        print (tabulate(info, headers=header))
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print(f'Total Price: {total}')
 
 class Resale:
     def __init__(self) -> None:
