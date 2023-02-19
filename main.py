@@ -1,61 +1,16 @@
 import pickle
+import getpass
 
-class Database:
-    def __init__(self) -> None:
-        self.businessOwners = []
-        self.users = []
-        self.admin = []
-        self.resellTicketList = []
-
-    def addAccount():
-        pass
-
-    def checkPassword():
-        pass
-
-class Account:
-    def __init__(self, username, password) -> None:
-        self.username = username
-        self.password = password
-        self.messages = {}
-    
-    def sendMsg():
-        pass
-
-    def viewMsg():
-        pass
-
-class Admin(Account):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-    
-    def cancelUserTicket():
-        pass
-
-class User(Account):
-    def __init__(self, username, password, balance) -> None:
-        super().__init__(username, password)
-        self.balance = balance
-    
-    def resellTicket():
-        pass
-
-class BusinessOwner(Account):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-        self.revenue = 0
-        self.rooms = []
-    
-    def defineRoom(BusinessType, size, regularPrice):
-        pass
+import database
+import system
         
 
 if __name__ == "__main__":
     # load database ---------------------------------------
     try:
-        database = pickle.load(open("database_file.pickle", "rb"))
+        db = pickle.load(open("database_file.pickle", "rb"))
     except (OSError, IOError) as e:
-        database = Database()
+        db = database.Database()
     # load database ---------------------------------------
 
     #  welcome pattern ---------------------------------------
@@ -68,14 +23,32 @@ if __name__ == "__main__":
     for i in range(n-2,-1,-2):
       print ('-'*int((m-i*3)/2)+'.|.'*i+'-'*int((m-i*3)/2))
     #  welcome pattern ---------------------------------------
+    
+    # log in ---------------------------------------
     print()
+    
     accountType = input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n')
-    if accountType == 1:
-        pass
-    elif accountType == 2:
-        pass
-    elif accountType == 3:
-        pass
+    username = input('Please enter your username:\n')
+    password = getpass.getpass()
+
+    newAccount = db.exist(accountType, username) # check if the user already exists or no
+    if newAccount == True:
+        if accountType == 1:
+            newUser = system.Admin(username, password)
+            database.addAccount(accountType, newUser)
+        elif accountType == 2:
+            newUser = system.BusinessOwner(username, password)
+            database.addAccount(accountType, newUser)
+        else:
+            balance = input("What is your initial balance?\n")
+            newUser = system.User(username, password, balance)
+            database.addAccount(accountType, newUser)
     else:
-        print("Wrong input! (Please enter 1 or 2 or 3)")
+        authentication = db.checkPassword(accountType, username, password)
+        if authentication == False:
+            print('your username and password do not match! Please try again.')
+            exit()
+    # log in ---------------------------------------
+
+    
 
