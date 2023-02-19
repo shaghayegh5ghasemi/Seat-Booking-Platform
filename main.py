@@ -1,5 +1,7 @@
 import pickle
 import getpass
+import os
+from time import sleep
 
 import database
 import system
@@ -48,7 +50,18 @@ if __name__ == "__main__":
         if authentication == False:
             print('your username and password do not match! Please try again.')
             exit()
+    sleep(1)
+    os.system('cls')
+    print("Successfully logged in! :)")
     # log in ---------------------------------------
+
+    # each user based on the accountType have different elligibilities
+    # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
+    eligibility = [['View messages', 'Send message', 'Cancel User Ticket'], 
+                    ['View messages', 'Send message', 'Define a room'], 
+                    ['View messages', 'Send message', 'Reserve', 'Resell a ticket', 'Cancel a ticket', 'Exchange a ticket', 'List all available users']] 
+
+
 
 
 
