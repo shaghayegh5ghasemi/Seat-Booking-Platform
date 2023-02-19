@@ -66,26 +66,38 @@ if __name__ == "__main__":
         if accountType == 1: # admin domain
             choice = int(input(seatBookingApp.eligibility[0]))
             match choice:
-                case 1:
+                case 1: # sign out
                     #seatBookingApp.db.saveDB(seatBookingApp.db)
                     print("Thank you for choosing our platform! :)")
                     exit()
-                case 2:
+                case 2: # view messages
+                    pass
+                case 3: # send message
+                    pass
+                case 4: # cancel user ticket
                     pass
         elif accountType == 2: # business owner domain
             choice = int(input(seatBookingApp.eligibility[1]))
             match choice:
-                case 1:
+                case 1: # sign out
                     #seatBookingApp.db.saveDB(seatBookingApp.db)
                     print("Thank you for choosing our platform! :)")
                     exit()
+                case 2: # view messages
+                    pass
+                case 3: # send message
+                    pass
         else: # user domain
             choice = int(input(seatBookingApp.eligibility[2]))
             match choice:
-                case 1:
+                case 1: # sign out
                     #seatBookingApp.db.saveDB(seatBookingApp.db)
                     print("Thank you for choosing our platform! :)")
                     exit()
+                case 2: # view messages
+                    pass
+                case 3: # send message
+                    pass
 
 
 
