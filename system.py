@@ -47,15 +47,16 @@ class BusinessOwner(Account):
         self.revenue = 0
         self.rooms = []
     
-    def defineRoom(self, BusinessType, size, regularPrice):
-        newRoom = Room(BusinessType, size, regularPrice)
+    def defineRoom(self, roomType, size, regularPrice):
+        newRoom = Room(self.username, roomType, size, regularPrice)
         self.rooms.append(newRoom)
     
-    def updateRevenue(self):
-        pass
+    def updateRevenue(self, price):
+        self.revenue = self.revenue + price
 
 class Room:
-    def __init__(self, roomType, size, regularPrice) -> None:
+    def __init__(self, ownerID, roomType, size, regularPrice) -> None:
+        self.ownerID = ownerID
         self.roomType = roomType 
         self.size = size
         self.regularPrice = regularPrice
