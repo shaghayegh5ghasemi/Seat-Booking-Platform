@@ -9,8 +9,10 @@ class Database:
         self.resaleTicketList = system.Resale()
 
     def search(self, accountList, username):
-        for account in accountList:
-            if account.username == username:
+        account = None
+        for acc in accountList:
+            if acc.username == username:
+                account = acc
                 return True, account
         return False, account
     
@@ -49,7 +51,7 @@ class Database:
                 result, account = self.search(self.users, username)
                 if account.password == password:
                     passwordMatch = True
-        return passwordMatch
+        return passwordMatch, account
 
     def loadDB(self):
         try:

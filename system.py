@@ -65,17 +65,14 @@ class Room:
 
     def applyPrice(self):
         price = np.full((self.size, self.size), self.regularPrice)
-        middle = math.floor(self.size/2)
+        middle = math.floor(self.size/2) - 1
 
         # two middle columns
-        price[:, middle] = price[:, 0]*1.25
-        price[:, middle+1] = price[:, 1]*1.25 
-        # first two rows
-        price[0, :] = price[:, 0]*2 
-        price[1, :] = price[:, 1]*2 
-        # last two rows
-        price[-2, :] = price[:, 0]*0.75 
-        price[-1, :] = price[:, 1]*0.75
+        price[1:-1, middle:middle+2] = price[1:-1, middle:middle+2]*1.25
+        # first row
+        price[0, :] = price[0, :]*2 
+        # last row
+        price[-1, :] = price[-1, :]*0.75
 
         return price
         

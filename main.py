@@ -28,35 +28,40 @@ class Application:
         accountType = int(input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n'))
         username = input('Please enter your username:\n')
         password = getpass.getpass()
+        account = None
 
         newAccount = self.db.exist(accountType, username) # check if the user already exists or no
         if newAccount == False:
             if accountType == 1:
                 newUser = system.Admin(username, password)
+                account = newUser
                 self.db.addAccount(accountType, newUser)
             elif accountType == 2:
                 newUser = system.BusinessOwner(username, password)
+                account = newUser
                 self.db.addAccount(accountType, newUser)
             elif accountType == 3:
                 balance = input("What is your initial balance?\n")
                 newUser = system.User(username, password, balance)
+                account = newUser
                 self.db.addAccount(accountType, newUser)
         else:
-            authentication = self.db.checkPassword(accountType, username, password)
+            authentication, acc = self.db.checkPassword(accountType, username, password)
             if authentication == False:
                 print('your username and password do not match! Please try again.')
                 exit()
+            account = acc
         sleep(1)
         os.system('cls')
         print("Successfully logged in! :)")
-        return accountType, username
+        return accountType, account
 
 
 if __name__ == "__main__":
     seatBookingApp = Application()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
-    accountType, username = seatBookingApp.signIn() # sign in 
+    accountType, account = seatBookingApp.signIn() # sign in 
 
     # each user based on the accountType have different elligibilities    
     while(True):
@@ -86,6 +91,12 @@ if __name__ == "__main__":
                     pass
                 case 3: # send message
                     pass
+                case 4: # define a new room
+                    print()
+                    roomType = input('What business do you want this room for (Businees Type)?  ')
+                    size = int(input('What is the desired size of the room? '))
+                    regularPrice = float(input('What is the regular price for seats?    '))
+                    account.defineRoom(roomType, size, regularPrice)
         else: # user domain
             choice = int(input(seatBookingApp.eligibility[2]))
             match choice:
