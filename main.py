@@ -57,9 +57,19 @@ if __name__ == "__main__":
 
     # each user based on the accountType have different elligibilities
     # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
-    eligibility = [['View messages', 'Send message', 'Cancel User Ticket'], 
-                    ['View messages', 'Send message', 'Define a room'], 
-                    ['View messages', 'Send message', 'Reserve', 'Resell a ticket', 'Cancel a ticket', 'Exchange a ticket', 'List all available users']] 
+    eligibility = [['1. Sign out', '2. View messages', '3. Send message', '4. Cancel User Ticket'], 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room'], 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. Reserve', '5. Resell a ticket', '6. Cancel a ticket', '7. Exchange a ticket', '8. List all business types', '9. List all available users']] 
+    
+    while(True):
+        print('What do you wish to do?')
+        choice = 0
+        if accountType == 1: # admin domain
+            choice = int(input(eligibility[0]))
+        elif accountType == 2: # business owner domain
+            choice = int(input(eligibility[1]))
+        else: # user domain
+            choice = int(input(eligibility[2]))
 
 
 
