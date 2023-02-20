@@ -3,6 +3,7 @@ import getpass
 import os
 from time import sleep
 from tabulate import tabulate
+import pprint
 
 import database
 import system
@@ -65,8 +66,12 @@ class Application:
         print("Thank you for choosing our platform! :)")
         exit()
     
-    def viewMessage(self): # 2. view messages 
-        pass
+    def viewMessage(self, account): # 2. view messages 
+        messages = account.messages
+        if len(messages) == 0:
+            print("Your inbox is empty!")
+        else:
+            pprint.pprint(messages)
 
     def sendMessage(self, account, accountType): # 3. send a message
         senderAccount = ""
@@ -322,7 +327,7 @@ if __name__ == "__main__":
                 case 1: # sign out
                     seatBookingApp.signOut()
                 case 2: # view messages
-                    pass
+                    seatBookingApp.viewMessage(account)
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # cancel user ticket
@@ -334,7 +339,7 @@ if __name__ == "__main__":
                 case 1: # sign out
                     seatBookingApp.signOut()
                 case 2: # view messages
-                    pass
+                    seatBookingApp.viewMessage(account)
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # define a new room
@@ -346,7 +351,7 @@ if __name__ == "__main__":
                 case 1: # sign out
                     seatBookingApp.signOut()
                 case 2: # view messages
-                    pass
+                    seatBookingApp.viewMessage(account)
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # list all rooms
