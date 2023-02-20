@@ -105,6 +105,40 @@ class Application:
 
         return allRoomObjects
 
+    def toMin(self, timeSlot):
+        s, e = timeSlot.split('-')
+        sHour, sMin = s.split(':')
+        eHour, eMin = e.split(':')
+        strat = sHour*60 + sMin
+        end = eHour*60 + eMin
+        return strat, end
+
+    def checkTimeOverlap(self, timeSlot1, timeSlot2):
+        # source of algorithm: https://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-if-two-ranges-overlap
+        overlap = False
+        
+        start1, end1 = self.toMin(timeSlot1) 
+        width1 = end1 - start1
+
+        start2, end2 = self.toMin(timeSlot2)
+        width2 = end2 - start2 
+
+        minRange = min(start1, start2)
+        maxRange = max(end1, end2)
+
+        if width1 + width2 > maxRange - minRange:
+            overlap = True
+        
+        return overlap     
+
+    def checkTicketTimeSlot(self, newReservation, previousReservations):
+        overlap = False
+        for t in previousReservations:
+            if self.checkTimeOverlap(newReservation, t.timeSlot):
+                overlap = True
+                break
+        
+        return overlap
 
     def reserveSeat(self, user):
         allRoomObjects = self.listRooms()
@@ -127,7 +161,12 @@ class Application:
             if desiredRoom.map[rows[i], columns[i]] == 1:
                 print("The selected seats have already been reserved! Please try again.")
                 return 
-
+        
+        # check time slot
+        if self.checkTicketTimeSlot(self, desiredRoom.timeSlot, user.tickets):
+            print("The time slot of new reservation has overlap with your precious reservations! Please try again.")
+            return
+    
         # check balance
         totalPrice = 0
         for i in range(len(rows)):
@@ -139,10 +178,6 @@ class Application:
         else:
             print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return
-
-        # check time slot
-
-        # creat a ticket for user
 
 
 if __name__ == "__main__":
