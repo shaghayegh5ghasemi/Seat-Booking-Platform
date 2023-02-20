@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from tabulate import tabulate
 
 class Account:
     def __init__(self, username, password) -> None:
@@ -24,9 +25,16 @@ class User(Account):
     def __init__(self, username, password, balance) -> None:
         super().__init__(username, password)
         self.balance = balance
+        self.tickets = []
     
-    def reserve(self):
-        pass
+    def reserve(self, room, rows, columns):
+        seatPrice = []
+        for i in range(len(rows)):
+            seatPrice.append(room.price[rows[i], columns[i]])
+
+        ticket = Ticket(self.username, room.ownerID, room.roomType, rows, columns, seatPrice, room.timeSlot)
+        self.tickets.append(ticket)
+        return ticket
 
     def resellTicket(self):
         pass
@@ -40,6 +48,14 @@ class User(Account):
     def listAccounts(self):
         pass
 
+    def updateBalance(self, amount, flag):
+        if flag == 'deposit':
+            self.balance = self.balance + amount
+        elif flag == 'withdrawal':
+            self.balance = self.balance - amount
+
+
+
 
 class BusinessOwner(Account):
     def __init__(self, username, password) -> None:
@@ -47,21 +63,22 @@ class BusinessOwner(Account):
         self.revenue = 0
         self.rooms = []
     
-    def defineRoom(self, roomType, size, regularPrice):
-        newRoom = Room(self.username, roomType, size, regularPrice)
+    def defineRoom(self, roomType, size, regularPrice, timeSlot):
+        newRoom = Room(self.username, roomType, size, regularPrice, timeSlot)
         self.rooms.append(newRoom)
     
     def updateRevenue(self, price):
         self.revenue = self.revenue + price
 
 class Room:
-    def __init__(self, ownerID, roomType, size, regularPrice) -> None:
+    def __init__(self, ownerID, roomType, size, regularPrice, timeSlot) -> None:
         self.ownerID = ownerID
         self.roomType = roomType 
         self.size = size
         self.regularPrice = regularPrice
         self.map = np.zeros((self.size, self.size), dtype=int)
         self.price = self.applyPrice()
+        self.timeSlot = timeSlot
 
     def applyPrice(self):
         price = np.full((self.size, self.size), self.regularPrice)
@@ -92,16 +109,43 @@ class Room:
             for elem in a:
                 print("{}".format(elem).rjust(3), end="")
             print(end="\n")
+        return f"Map of the {self.roomType} - {self.ownerID}"
 
 class Ticket:
-    def __init__(self, ticketID, username, roomType, seatDetail) -> None:
-        self.ticketID = ticketID
-        self.username = username
+    def __init__(self, ticketID, businessOwnerID, roomType, rows, columns, seatPrice, timeSLot) -> None:
+        self.ticketID = ticketID # ticket owner
+        self.businessOwnerID = businessOwnerID # business owner
         self.roomType = roomType
-        self.seatDetail = seatDetail
-    
+        self.rows = rows
+        self.columns = columns
+        self.seatPrice = seatPrice
+        self.timeSlot = timeSLot
+
+    def ticketInfo(self):
+        info = []
+        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Time Slot", "Price"]
+        total = 0
+        for i in range(len(self.rows)):
+            temp = []
+            temp.append(i) 
+            temp.append(self.ticketID) 
+            temp.append(self.businessOwnerID) 
+            temp.append(self.roomType) 
+            temp.append(self.rows[i]) 
+            temp.append(self.columns[i]) 
+            temp.append(self.timeSlot) 
+            temp.append(self.seatPrice[i])
+            total = total + self.seatPrice[i]
+            
+            info.append(temp)
+        
+        return info, header, total
+
     def printTicket(self):
-        pass
+        info, header, total = self.ticketInfo()
+        print (tabulate(info, headers=header))
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print(f'Total Price: {total} CAD')
 
 class Resale:
     def __init__(self) -> None:
