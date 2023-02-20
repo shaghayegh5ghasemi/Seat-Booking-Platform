@@ -36,11 +36,23 @@ class User(Account):
         self.tickets.append(ticket)
         return ticket
 
+    def listAllTickets(self):
+        for i in range(len(self.tickets)):
+            print(f"Ticket # {i}:")
+            self.tickets[i].printTicket()
+            print("**************************************************************************************************************")
+
     def resellTicket(self):
         pass
 
-    def cancelTicket(self):
-        pass
+    def cancelTicket(self, i, businessOwners):
+        ticket = self.tickets[i]
+        for business in businessOwners:
+            if ticket.businessOwnerID == business.username:
+                for room in business.rooms:
+                    if ticket.roomType == room.roomType:
+                        room.updateVacancy(ticket.rows, ticket.columns, 0)
+        del self.tickets[i]
 
     def exchangeTicket(self):
         pass

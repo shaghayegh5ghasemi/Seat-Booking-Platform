@@ -190,10 +190,19 @@ class Application:
         else:
             print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return
+    
+    def userCancelTicket(self, user):
+        user.listAllTickets()
+        id = int(input('Which ticket do you want to cancel?(enter ticket #) '))
+        user.cancelTicket(id, self.db.businessOwners)
+        print("Ticket successfully canceled! :)")
 
 
 if __name__ == "__main__":
     seatBookingApp = Application()
+    # users = seatBookingApp.db.users
+    # print(users[2].tickets[0].printTicket())
+    # exit()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
     accountType, account = seatBookingApp.signIn() # sign in 
@@ -241,6 +250,10 @@ if __name__ == "__main__":
                     seatBookingApp.listRooms()
                 case 5: # reserve a seat
                     seatBookingApp.reserveSeat(account)
+                case 6: # resell a ticket
+                    pass
+                case 7: # cancel a ticket
+                    seatBookingApp.userCancelTicket(account)
 
 
 
