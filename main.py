@@ -125,7 +125,7 @@ class Application:
             info.append(temp)
         print (tabulate(info, headers=header))
 
-    def listSystemUsers(self): # list all system users
+    def listSystemUsers(self): # 7. list all system users
         info = []
         header = ["User #", "Username"]
         allusers = self.db.users
@@ -136,7 +136,7 @@ class Application:
             info.append(temp)
         print (tabulate(info, headers=header))
 
-    def toMin(self, timeSlot):
+    def toMin(self, timeSlot): # convert hh:mm input format to an integer that show which min from midnight!
         s, e = timeSlot.split('-')
         sHour, sMin = s.split(':')
         eHour, eMin = e.split(':')
@@ -144,7 +144,7 @@ class Application:
         end = int(eHour)*60 + int(eMin)
         return strat, end
 
-    def checkTimeOverlap(self, timeSlot1, timeSlot2):
+    def checkTimeOverlap(self, timeSlot1, timeSlot2): # check overlap between two time slots based on their converted format
         # source of algorithm: https://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-if-two-ranges-overlap
         overlap = False
         
@@ -162,7 +162,7 @@ class Application:
         
         return overlap     
 
-    def checkTicketTimeSlot(self, newReservation, previousReservations):
+    def checkTicketTimeSlot(self, newReservation, previousReservations): # check if a new reservation has overlap with previous reservations
         overlap = False
         for t in previousReservations:
             if self.checkTimeOverlap(newReservation, t.timeSlot):
@@ -221,13 +221,7 @@ class Application:
             print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return
     
-    def userCancelTicket(self, user):
-        user.listAllTickets()
-        id = int(input('Which ticket do you want to cancel?(enter ticket #) '))
-        user.cancelTicket(id, self.db.businessOwners)
-        print("Ticket successfully canceled! :)")
-    
-    def userResellTicket(self, user):
+    def userResellTicket(self, user): # 9. resell a ticket
         user.listAllTickets()
         id = int(input('Which ticket do you want to resell?(enter ticket #) '))
         ticket = user.tickets[id]
@@ -247,6 +241,23 @@ class Application:
         user.resellTicket(ticket) # remove the ticket from user's available tickets
         print("Ticket successfully added to resale list! :)")
 
+    def userCancelTicket(self, user): # 10. cancel a ticket
+        user.listAllTickets()
+        id = int(input('Which ticket do you want to cancel?(enter ticket #) '))
+        user.cancelTicket(id, self.db.businessOwners)
+        print("Ticket successfully canceled! :)")
+
+    def userUpdateBalance(self, user): # 11. update balance
+        print(f"Your current balance is: {user.balance}")
+        choice = int(input("What do you want to do with your balance? 1. Deposit 2. Withdrawal \n"))
+        match choice:
+            case 1:
+                amount = float(input("How much do you want to deposit? "))
+                user.updateBalance(amount, 'deposit')
+            case 2:
+                amount = float(input("How much do you want to withdrawal? "))
+                user.updateBalance(amount, 'withdrawal')
+        print(f"Successful! Your new balance is: {user.balance}")
 
 if __name__ == "__main__":
     seatBookingApp = Application()
@@ -313,7 +324,7 @@ if __name__ == "__main__":
                 case 11: # exchange a ticket
                     pass
                 case 12: # update balance
-                    pass
+                    seatBookingApp.userUpdateBalance(account)
 
 
 
