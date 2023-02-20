@@ -125,6 +125,17 @@ class Application:
             info.append(temp)
         print (tabulate(info, headers=header))
 
+    def listSystemUsers(self): # list all system users
+        info = []
+        header = ["User #", "Username"]
+        allusers = self.db.users
+        for i in range(len(allusers)):
+            temp = []
+            temp.append(i)
+            temp.append(allusers[i].username)
+            info.append(temp)
+        print (tabulate(info, headers=header))
+
     def toMin(self, timeSlot):
         s, e = timeSlot.split('-')
         sHour, sMin = s.split(':')
@@ -292,7 +303,7 @@ if __name__ == "__main__":
                 case 6: # list all business owners
                     seatBookingApp.listBusinessOwners()
                 case 7: # list alll system users
-                    pass
+                    seatBookingApp.listSystemUsers()
                 case 8: # reserve a seat
                     seatBookingApp.reserveSeat(account)
                 case 9: # resell a ticket
