@@ -42,8 +42,8 @@ class User(Account):
             self.tickets[i].printTicket()
             print("**************************************************************************************************************")
 
-    def resellTicket(self):
-        pass
+    def resellTicket(self, ticket):
+        self.tickets.remove(ticket)
 
     def cancelTicket(self, i, businessOwners):
         ticket = self.tickets[i]
@@ -156,13 +156,20 @@ class Ticket:
     def printTicket(self):
         info, header, total = self.ticketInfo()
         print (tabulate(info, headers=header))
-        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        print(f'Total Price: {total} CAD')
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print(f'Total Price: {total} CAD') 
+        return "Seat Booking Platform"
+    
 
 class Resale:
-    def __init__(self, businessOwner, room, seller, discount) -> None:
+    def __init__(self, ticket, businessOwner, room, seller, discount) -> None:
+        self.ticket = ticket
         self.businessOwner = businessOwner
         self.room = room
         self.seller = seller
         self.discount = discount
+
+    def printResale(self):
+        self.ticket.printTicket()
+        return "Seat Booking Platform"
         

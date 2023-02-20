@@ -212,16 +212,17 @@ class Application:
                         room = r
                         
         discount = float(input("What do you offer as a discount ratio? "))
-        resaleTicket = system.Resale(businessOwner, room, user, discount)
-        self.db.resale.append(resaleTicket)
+        resaleTicket = system.Resale(ticket, businessOwner, room, user, discount)
+        self.db.resale.append(resaleTicket) # add the ticket to resale list
+        user.resellTicket(ticket) # remove the ticket from user's available tickets
         print("Ticket successfully added to resale list! :)")
 
 
 if __name__ == "__main__":
     seatBookingApp = Application()
-    # users = seatBookingApp.db.users
-    # print(users[2].tickets[0].printTicket())
-    # exit()
+    resale = seatBookingApp.db.resale
+    print(resale[0].printResale())
+    exit()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
     accountType, account = seatBookingApp.signIn() # sign in 
