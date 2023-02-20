@@ -48,6 +48,14 @@ class User(Account):
     def listAccounts(self):
         pass
 
+    def updateBalance(self, amount, flag):
+        if flag == 'deposit':
+            self.balance = self.balance + amount
+        elif flag == 'withdrawal':
+            self.balance = self.balance - amount
+
+
+
 
 class BusinessOwner(Account):
     def __init__(self, username, password) -> None:

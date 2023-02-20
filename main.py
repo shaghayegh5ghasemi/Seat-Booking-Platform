@@ -89,9 +89,9 @@ class Application:
         allRooms = []
         header = ["Room #", "Business Owner", "Room Type", "Regular Price", "Time Slot"]
 
+        i = 0
         for business in businessList:
-            for i in range(len(business.rooms)):
-                room = business.rooms[i]
+            for room in business.rooms:
                 temp = []
                 temp.append(i)
                 temp.append(room.ownerID)
@@ -100,6 +100,7 @@ class Application:
                 temp.append(room.timeSlot)
                 allRooms.append(temp)
                 allRoomObjects.append(room)
+                i = i + 1
         
         print (tabulate(allRooms, headers=header))
 
@@ -109,8 +110,8 @@ class Application:
         s, e = timeSlot.split('-')
         sHour, sMin = s.split(':')
         eHour, eMin = e.split(':')
-        strat = sHour*60 + sMin
-        end = eHour*60 + eMin
+        strat = int(sHour)*60 + int(sMin)
+        end = int(eHour)*60 + int(eMin)
         return strat, end
 
     def checkTimeOverlap(self, timeSlot1, timeSlot2):
@@ -173,10 +174,19 @@ class Application:
             totalPrice = totalPrice + desiredRoom.price[rows[i], columns[i]]
 
         if totalPrice <= user.balance:
-            # create a ticket / or time slot check
+            # create a ticket
             ticket = user.reserve(desiredRoom, rows, columns)
             print("Reservation Completed! Your receipts: ")
             ticket.printTicket()
+            
+            desiredRoom.updateVacancy(rows, columns, 1) # fill the seats in room map
+            
+            # update business owner revenue
+            for business in self.db.businessOwners:
+                if business.username == desiredRoom.ownerID:
+                    business.updateRevenue(totalPrice)
+    
+            user.updateBalance(totalPrice, 'withdrawal') # update user balance
         else:
             print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return
