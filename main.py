@@ -13,7 +13,9 @@ class Application:
         # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
         self.eligibility = [['1. Sign out', '2. View messages', '3. Send message', '4. Cancel User Ticket'], 
                     ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room'], 
-                    ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', '5. Reserve', '6. Resell a ticket', '7. Cancel a ticket', '8. Exchange a ticket', '9. List all business types', '10. List all available users', '11. Update Balance']] 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', 
+                    '5. List all resale tickets', '6. List all business owners', '7. List all system users', '8. Reserve', '9. Resell a ticket',
+                     '10. Cancel a ticket', '11. Exchange a ticket', '12. Update Balance']] 
 
     def welcomeMsg(self, n, m):
         for i in range(1,n,2):
@@ -83,7 +85,7 @@ class Application:
         businessOwner.defineRoom(roomType, size, regularPrice, timeSlot)
 
     # features for users
-    def listRooms(self):
+    def listRooms(self): # 4. list all rooms
         businessList = self.db.businessOwners
         allRoomObjects = []
         allRooms = []
@@ -105,6 +107,11 @@ class Application:
         print (tabulate(allRooms, headers=header))
 
         return allRoomObjects
+
+    def listResaletickets(self): # 5. list all resale tickets
+        allResaleTickets = self.db.resale
+        for resale in allResaleTickets:
+            resale.printResale()
 
     def toMin(self, timeSlot):
         s, e = timeSlot.split('-')
@@ -141,7 +148,7 @@ class Application:
         
         return overlap
 
-    def reserveSeat(self, user):
+    def reserveSeat(self, user): # 8. reserve a seat
         allRoomObjects = self.listRooms()
         print()
         roomNumber = int(input("You want to reserve from which Room # ? "))
@@ -220,9 +227,9 @@ class Application:
 
 if __name__ == "__main__":
     seatBookingApp = Application()
-    resale = seatBookingApp.db.resale
-    print(resale[0].printResale())
-    exit()
+    # resale = seatBookingApp.db.resale
+    # print(resale[0].printResale())
+    # exit()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
     accountType, account = seatBookingApp.signIn() # sign in 
@@ -268,12 +275,22 @@ if __name__ == "__main__":
                     pass
                 case 4: # list all rooms
                     seatBookingApp.listRooms()
-                case 5: # reserve a seat
+                case 5: # list all resale tickets
+                    seatBookingApp.listResaletickets()
+                case 6: # list all business owners
+                    pass
+                case 7: # list alll system users
+                    pass
+                case 8: # reserve a seat
                     seatBookingApp.reserveSeat(account)
-                case 6: # resell a ticket
+                case 9: # resell a ticket
                     seatBookingApp.userResellTicket(account)
-                case 7: # cancel a ticket
-                    seatBookingApp.userCancelTicket(account)
+                case 10: # cancel a ticket
+                    seatBookingApp.userCancelTicket(account) 
+                case 11: # exchange a ticket
+                    pass
+                case 12: # update balance
+                    pass
 
 
 
