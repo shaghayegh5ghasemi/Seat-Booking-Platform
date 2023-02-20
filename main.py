@@ -43,7 +43,7 @@ class Application:
                 account = newUser
                 self.db.addAccount(accountType, newUser)
             elif accountType == 3:
-                balance = input("What is your initial balance?\n")
+                balance = float(input("What is your initial balance?\n"))
                 newUser = system.User(username, password, balance)
                 account = newUser
                 self.db.addAccount(accountType, newUser)
@@ -152,9 +152,9 @@ class Application:
         rows = []
         columns = []
         for i in range(seatNumbers):
-            row, column = int(input(f'Enter the row and column of seat # {i}: (example: 3,4)')).split(',')
-            rows.append(row)
-            columns.append(column)
+            row, column = input(f'Enter the row and column of seat # {i}: (example: 3,4)' ).split(',')
+            rows.append(int(row))
+            columns.append(int(column))
 
         # check vacancy
         for i in range(len(rows)):
@@ -163,7 +163,7 @@ class Application:
                 return 
         
         # check time slot
-        if self.checkTicketTimeSlot(self, desiredRoom.timeSlot, user.tickets):
+        if self.checkTicketTimeSlot(desiredRoom.timeSlot, user.tickets):
             print("The time slot of new reservation has overlap with your precious reservations! Please try again.")
             return
     
@@ -174,7 +174,9 @@ class Application:
 
         if totalPrice <= user.balance:
             # create a ticket / or time slot check
-            pass
+            ticket = user.reserve(desiredRoom, rows, columns)
+            print("Reservation Completed! Your receipts: ")
+            ticket.printTicket()
         else:
             print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return

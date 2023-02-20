@@ -27,8 +27,14 @@ class User(Account):
         self.balance = balance
         self.tickets = []
     
-    def reserve(self):
-        pass
+    def reserve(self, room, rows, columns):
+        seatPrice = []
+        for i in range(len(rows)):
+            seatPrice.append(room.price[rows[i], columns[i]])
+
+        ticket = Ticket(self.username, room.ownerID, room.roomType, rows, columns, seatPrice, room.timeSlot)
+        self.tickets.append(ticket)
+        return ticket
 
     def resellTicket(self):
         pass
@@ -98,9 +104,9 @@ class Room:
         return f"Map of the {self.roomType} - {self.ownerID}"
 
 class Ticket:
-    def __init__(self, ownerID, ticketID, roomType, rows, columns, seatPrice, timeSLot) -> None:
-        self.ownerID = ownerID # ticket owner
-        self.ticketID = ticketID # business owner
+    def __init__(self, ticketID, businessOwnerID, roomType, rows, columns, seatPrice, timeSLot) -> None:
+        self.ticketID = ticketID # ticket owner
+        self.businessOwnerID = businessOwnerID # business owner
         self.roomType = roomType
         self.rows = rows
         self.columns = columns
@@ -109,20 +115,29 @@ class Ticket:
 
     def ticketInfo(self):
         info = []
-        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Time Slot" "Price"]
+        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Time Slot", "Price"]
+        total = 0
         for i in range(len(self.rows)):
             temp = []
-            temp.append(i, self.ownerID, self.ticketID, self.roomType, self.rows[i], self.columns[i], self.timeSlot, self.seatPrice[i])
+            temp.append(i) 
+            temp.append(self.ticketID) 
+            temp.append(self.businessOwnerID) 
+            temp.append(self.roomType) 
+            temp.append(self.rows[i]) 
+            temp.append(self.columns[i]) 
+            temp.append(self.timeSlot) 
+            temp.append(self.seatPrice[i])
+            total = total + self.seatPrice[i]
+            
+            info.append(temp)
         
-        return info, header
+        return info, header, total
 
     def printTicket(self):
-        info, header = self.ticketInfo()
-        temp = np.array(info)
-        total = np.sum(temp[:, -1])
+        info, header, total = self.ticketInfo()
         print (tabulate(info, headers=header))
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        print(f'Total Price: {total}')
+        print(f'Total Price: {total} CAD')
 
 class Resale:
     def __init__(self) -> None:
