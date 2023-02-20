@@ -113,6 +113,18 @@ class Application:
         for resale in allResaleTickets:
             resale.printResale()
 
+    def listBusinessOwners(self): # 6. list all business owners
+        info = []
+        header = ["Business Owner #", "Name", "Number of registered room"]
+        allBusinessOwners = self.db.businessOwners
+        for i in range(len(allBusinessOwners)):
+            temp = []
+            temp.append(i)
+            temp.append(allBusinessOwners[i].username)
+            temp.append(len(allBusinessOwners[i].rooms))
+            info.append(temp)
+        print (tabulate(info, headers=header))
+
     def toMin(self, timeSlot):
         s, e = timeSlot.split('-')
         sHour, sMin = s.split(':')
@@ -278,7 +290,7 @@ if __name__ == "__main__":
                 case 5: # list all resale tickets
                     seatBookingApp.listResaletickets()
                 case 6: # list all business owners
-                    pass
+                    seatBookingApp.listBusinessOwners()
                 case 7: # list alll system users
                     pass
                 case 8: # reserve a seat
