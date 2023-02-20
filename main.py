@@ -28,7 +28,7 @@ class Application:
         print()
 
     # common features between all account types
-    def signIn(self):
+    def signIn(self): # sign in
         accountType = int(input('Which one of these options best describe you? 1.Admin 2.Business Owner 3.User\n'))
         username = input('Please enter your username:\n')
         password = getpass.getpass()
@@ -60,20 +60,62 @@ class Application:
         print("Successfully logged in! :)")
         return accountType, account
     
-    def signOut(self):
+    def signOut(self): # 1. sign out
         seatBookingApp.db.saveDB(self.db)
         print("Thank you for choosing our platform! :)")
         exit()
     
-    def sendMessage(self):
+    def viewMessage(self): # 2. view messages 
         pass
+
+    def sendMessage(self, account, accountType): # 3. send a message
+        senderAccount = ""
+        if accountType == 1:
+            senderAccount = "Admin:"
+        elif accountType == 2:
+            senderAccount = "Business Owner:"
+        else:
+            senderAccount = "User:"
+
+        choice = int(input("What is the account type of the user you wish to communicate with? 1. Admin 2. Business Owner 3. User \n"))
+        match choice:
+            case 1:
+                request = int(input("What is your request? 1. Complaint 2. Support\n"))
+                if request == 1:
+                    msg = input("What is your message? ")
+                    src = senderAccount + account.username # source of message
+                    dest = self.db.admin[0].messages # the inbox message of the destination
+
+                    dest[src] = msg # dictionary key = source of msg, dictionary value = message
+
+                    print(f"Message successfully was sent to Admin! :)")
+                else:
+                    pass # other management stuff that an admin can do
+            case 2:
+                self.listBusinessOwners()
+                id = int(input("Who do you want to send a message? "))
+                msg = input("What is your message? ")
+                
+                src = senderAccount + account.username # source of message
+                dest = self.db.businessOwners[id].messages # the inbox message of the destination
+
+                dest[src] = msg # dictionary key = source of msg, dictionary value = message
+
+                print(f"Message successfully was sent to {self.db.businessOwners[id].username}! :)")
+            case 3:
+                self.listSystemUsers()
+                id = int(input("Who do you want to send a message? "))
+                msg = input("What is your message? ")
+                
+                src = senderAccount + account.username # source of message
+                dest = self.db.users[id].messages # the inbox message of the destination
+
+                dest[src] = msg # dictionary key = source of msg, dictionary value = message
+
+                print(f"Message successfully was sent to {self.db.users[id].username}! :)")
 
     def sendToAll(self):
         pass
-
-    def viewMessage(self):
-        pass
-
 
     # features for business owners
     def registerRoom(self, businessOwner):
@@ -261,8 +303,8 @@ class Application:
 
 if __name__ == "__main__":
     seatBookingApp = Application()
-    # resale = seatBookingApp.db.resale
-    # print(resale[0].printResale())
+    # msg = seatBookingApp.db.businessOwners[1].messages
+    # print(msg)
     # exit()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
@@ -282,7 +324,7 @@ if __name__ == "__main__":
                 case 2: # view messages
                     pass
                 case 3: # send message
-                    pass
+                    seatBookingApp.sendMessage(account, accountType)
                 case 4: # cancel user ticket
                     pass
         elif accountType == 2: # business owner domain
@@ -294,7 +336,7 @@ if __name__ == "__main__":
                 case 2: # view messages
                     pass
                 case 3: # send message
-                    pass
+                    seatBookingApp.sendMessage(account, accountType)
                 case 4: # define a new room
                     seatBookingApp.registerRoom(account)
         else: # user domain
@@ -306,7 +348,7 @@ if __name__ == "__main__":
                 case 2: # view messages
                     pass
                 case 3: # send message
-                    pass
+                    seatBookingApp.sendMessage(account, accountType)
                 case 4: # list all rooms
                     seatBookingApp.listRooms()
                 case 5: # list all resale tickets
