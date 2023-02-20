@@ -36,11 +36,23 @@ class User(Account):
         self.tickets.append(ticket)
         return ticket
 
-    def resellTicket(self):
-        pass
+    def listAllTickets(self):
+        for i in range(len(self.tickets)):
+            print(f"Ticket # {i}:")
+            self.tickets[i].printTicket()
+            print("**************************************************************************************************************")
 
-    def cancelTicket(self):
-        pass
+    def resellTicket(self, ticket):
+        self.tickets.remove(ticket)
+
+    def cancelTicket(self, i, businessOwners):
+        ticket = self.tickets[i]
+        for business in businessOwners:
+            if ticket.businessOwnerID == business.username:
+                for room in business.rooms:
+                    if ticket.roomType == room.roomType:
+                        room.updateVacancy(ticket.rows, ticket.columns, 0)
+        del self.tickets[i]
 
     def exchangeTicket(self):
         pass
@@ -144,15 +156,20 @@ class Ticket:
     def printTicket(self):
         info, header, total = self.ticketInfo()
         print (tabulate(info, headers=header))
-        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-        print(f'Total Price: {total} CAD')
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print(f'Total Price: {total} CAD') 
+        return "Seat Booking Platform"
+    
 
 class Resale:
-    def __init__(self) -> None:
-        self.resaleList = []
+    def __init__(self, ticket, businessOwner, room, seller, discount) -> None:
+        self.ticket = ticket
+        self.businessOwner = businessOwner
+        self.room = room
+        self.seller = seller
+        self.discount = discount
 
-    def addResale(self):
-        pass
-
-    def removeResale(self):
-        pass
+    def printResale(self):
+        self.ticket.printTicket()
+        return "Seat Booking Platform"
+        

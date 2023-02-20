@@ -1,12 +1,11 @@
 import pickle
-import system
 
 class Database:
     def __init__(self) -> None:
         self.admin = []
         self.businessOwners = []
         self.users = []
-        self.resaleTicketList = system.Resale()
+        self.resale = []
 
     def search(self, accountList, username):
         account = None
@@ -63,3 +62,9 @@ class Database:
     def saveDB(self, db):    
         with open("database_file.pickle", "wb") as dbFile: # save recent changes to db before sign out
             pickle.dump(db, dbFile)
+    
+    def addResale(self):
+        pass
+
+    def removeResela(self):
+        pass
