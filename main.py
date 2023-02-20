@@ -2,6 +2,7 @@ import pickle
 import getpass
 import os
 from time import sleep
+from tabulate import tabulate
 
 import database
 import system
@@ -12,7 +13,7 @@ class Application:
         # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
         self.eligibility = [['1. Sign out', '2. View messages', '3. Send message', '4. Cancel User Ticket'], 
                     ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room'], 
-                    ['1. Sign out', '2. View messages', '3. Send message', '4. Reserve', '5. Resell a ticket', '6. Cancel a ticket', '7. Exchange a ticket', '8. List all business types', '9. List all available users']] 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', '5. Reserve', '6. Resell a ticket', '7. Cancel a ticket', '8. Exchange a ticket', '9. List all business types', '10. List all available users']] 
 
     def welcomeMsg(self, n, m):
         for i in range(1,n,2):
@@ -82,8 +83,28 @@ class Application:
         businessOwner.defineRoom(roomType, size, regularPrice, timeSlot)
 
     # features for users
+    def listRooms(self):
+        businessList = self.db.businessOwners
+        allRooms = []
+        header = ["Room #", "Business Owner", "Room Type", "Regular Price", "Time Slot"]
+
+        for business in businessList:
+            for i in range(len(business.rooms)):
+                room = business.rooms[i]
+                temp = []
+                temp.append(i)
+                temp.append(room.ownerID)
+                temp.append(room.roomType)
+                temp.append(room.regularPrice)
+                temp.append(room.timeSlot)
+                allRooms.append(temp)
+        
+        print (tabulate(allRooms, headers=header))
+
+
     def reserveSeat(self):
         pass
+
 
 if __name__ == "__main__":
     seatBookingApp = Application()
@@ -93,6 +114,7 @@ if __name__ == "__main__":
 
     # each user based on the accountType have different elligibilities    
     while(True):
+        print()
         print('What do you wish to do?')
         choice = 0
         if accountType == 1: # admin domain
@@ -126,7 +148,9 @@ if __name__ == "__main__":
                     pass
                 case 3: # send message
                     pass
-                case 4: # reserve a seat
+                case 4: # list all rooms
+                    seatBookingApp.listRooms()
+                case 5: # reserve a seat
                     pass
 
 
