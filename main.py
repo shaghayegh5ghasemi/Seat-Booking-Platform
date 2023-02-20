@@ -196,6 +196,25 @@ class Application:
         id = int(input('Which ticket do you want to cancel?(enter ticket #) '))
         user.cancelTicket(id, self.db.businessOwners)
         print("Ticket successfully canceled! :)")
+    
+    def userResellTicket(self, user):
+        user.listAllTickets()
+        id = int(input('Which ticket do you want to resell?(enter ticket #) '))
+        ticket = user.tickets[id]
+        businessOwner = None
+        room = None
+
+        for business in self.db.businessOwners:
+            if ticket.businessOwnerID == business.username:
+                businessOwner = business
+                for r in business.rooms:
+                    if ticket.roomType == r.roomType:
+                        room = r
+                        
+        discount = float(input("What do you offer as a discount ratio? "))
+        resaleTicket = system.Resale(businessOwner, room, user, discount)
+        self.db.resale.append(resaleTicket)
+        print("Ticket successfully added to resale list! :)")
 
 
 if __name__ == "__main__":
@@ -251,7 +270,7 @@ if __name__ == "__main__":
                 case 5: # reserve a seat
                     seatBookingApp.reserveSeat(account)
                 case 6: # resell a ticket
-                    pass
+                    seatBookingApp.userResellTicket(account)
                 case 7: # cancel a ticket
                     seatBookingApp.userCancelTicket(account)
 

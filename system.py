@@ -160,11 +160,9 @@ class Ticket:
         print(f'Total Price: {total} CAD')
 
 class Resale:
-    def __init__(self) -> None:
-        self.resaleList = []
-
-    def addResale(self):
-        pass
-
-    def removeResale(self):
-        pass
+    def __init__(self, businessOwner, room, seller, discount) -> None:
+        self.businessOwner = businessOwner
+        self.room = room
+        self.seller = seller
+        self.discount = discount
+        
