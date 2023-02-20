@@ -1,4 +1,4 @@
-import pickle
+import numpy as np
 import getpass
 import os
 from time import sleep
@@ -13,7 +13,7 @@ class Application:
         # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
         self.eligibility = [['1. Sign out', '2. View messages', '3. Send message', '4. Cancel User Ticket'], 
                     ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room'], 
-                    ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', '5. Reserve', '6. Resell a ticket', '7. Cancel a ticket', '8. Exchange a ticket', '9. List all business types', '10. List all available users']] 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', '5. Reserve', '6. Resell a ticket', '7. Cancel a ticket', '8. Exchange a ticket', '9. List all business types', '10. List all available users', '11. Update Balance']] 
 
     def welcomeMsg(self, n, m):
         for i in range(1,n,2):
@@ -76,15 +76,16 @@ class Application:
     # features for business owners
     def registerRoom(self, businessOwner):
         print()
-        roomType = input('What business do you want this room for (Businees Type)?    ')
-        size = int(input('What is the desired size of the room?    '))
-        regularPrice = float(input('What is the regular price for seats?    '))
-        timeSlot = input('What time slot will this room be available? (example of accepted answer: 2:30-4:05)    ')
+        roomType = input('What business do you want this room for (Businees Type)? ')
+        size = int(input('What is the desired size of the room? '))
+        regularPrice = float(input('What is the regular price for seats? '))
+        timeSlot = input('What time slot will this room be available? (example of accepted answer: 2:30-4:05) ')
         businessOwner.defineRoom(roomType, size, regularPrice, timeSlot)
 
     # features for users
     def listRooms(self):
         businessList = self.db.businessOwners
+        allRoomObjects = []
         allRooms = []
         header = ["Room #", "Business Owner", "Room Type", "Regular Price", "Time Slot"]
 
@@ -98,12 +99,50 @@ class Application:
                 temp.append(room.regularPrice)
                 temp.append(room.timeSlot)
                 allRooms.append(temp)
+                allRoomObjects.append(room)
         
         print (tabulate(allRooms, headers=header))
 
+        return allRoomObjects
 
-    def reserveSeat(self):
-        pass
+
+    def reserveSeat(self, user):
+        allRoomObjects = self.listRooms()
+        print()
+        roomNumber = int(input("You want to reserve from which Room # ? "))
+        desiredRoom = allRoomObjects[roomNumber]
+        desiredRoom.showMap()
+
+        # ask for the detail (row and column)
+        seatNumbers = int(input('How many seats do you want to reserve? '))
+        rows = []
+        columns = []
+        for i in range(seatNumbers):
+            row, column = int(input(f'Enter the row and column of seat # {i}: (example: 3,4)')).split(',')
+            rows.append(row)
+            columns.append(column)
+
+        # check vacancy
+        for i in range(len(rows)):
+            if desiredRoom.map[rows[i], columns[i]] == 1:
+                print("The selected seats have already been reserved! Please try again.")
+                return 
+
+        # check balance
+        totalPrice = 0
+        for i in range(len(rows)):
+            totalPrice = totalPrice + desiredRoom.price[rows[i], columns[i]]
+
+        if totalPrice <= user.balance:
+            # create a ticket / or time slot check
+            pass
+        else:
+            print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
+            return
+
+        # check time slot
+
+        # creat a ticket for user
 
 
 if __name__ == "__main__":
@@ -118,7 +157,8 @@ if __name__ == "__main__":
         print('What do you wish to do?')
         choice = 0
         if accountType == 1: # admin domain
-            choice = int(input(seatBookingApp.eligibility[0]))
+            choice = int(input('\n'.join(seatBookingApp.eligibility[0])))
+            print()
             match choice:
                 case 1: # sign out
                     seatBookingApp.signOut()
@@ -129,7 +169,8 @@ if __name__ == "__main__":
                 case 4: # cancel user ticket
                     pass
         elif accountType == 2: # business owner domain
-            choice = int(input(seatBookingApp.eligibility[1]))
+            choice = int(input('\n'.join(seatBookingApp.eligibility[1])))
+            print()
             match choice:
                 case 1: # sign out
                     seatBookingApp.signOut()
@@ -140,7 +181,8 @@ if __name__ == "__main__":
                 case 4: # define a new room
                     seatBookingApp.registerRoom(account)
         else: # user domain
-            choice = int(input(seatBookingApp.eligibility[2]))
+            choice = int(input('\n'.join(seatBookingApp.eligibility[2])))
+            print()
             match choice:
                 case 1: # sign out
                     seatBookingApp.signOut()
@@ -151,7 +193,7 @@ if __name__ == "__main__":
                 case 4: # list all rooms
                     seatBookingApp.listRooms()
                 case 5: # reserve a seat
-                    pass
+                    seatBookingApp.reserveSeat(account)
 
 
 
