@@ -119,8 +119,17 @@ class Application:
 
                 print(f"Message successfully was sent to {self.db.users[id].username}! :)")
 
-    def sendToAll(self):
-        pass
+    def sendToAll(self, user): # notify all users about a new resale ticket
+        msg = 'I have added a new ticket to resale list.'
+        src = "User:" + user.username # source of message
+        for ad in self.db.admin:
+            ad.messages[src] = msg
+        for business in self.db.businessOwners: # send to all business owners
+            business.messages[src] = msg
+        for user in self.db.users: # send to all users
+            user.messages[src] = msg
+
+
 
     # features for business owners
     def registerRoom(self, businessOwner):
@@ -159,6 +168,7 @@ class Application:
         allResaleTickets = self.db.resale
         for resale in allResaleTickets:
             resale.printResale()
+            print()
 
     def listBusinessOwners(self): # 6. list all business owners
         info = []
@@ -284,11 +294,14 @@ class Application:
                         
         discount = float(input("What do you offer as a discount ratio? "))
         resaleTicket = system.Resale(ticket, businessOwner, room, user, discount)
+        self.sendToAll(user)
         self.db.resale.append(resaleTicket) # add the ticket to resale list
         user.resellTicket(ticket) # remove the ticket from user's available tickets
         print("Ticket successfully added to resale list! :)")
 
     def userCancelTicket(self, user): # 10. cancel a ticket
+        if len(user.tickets) == 0:
+            print("Currently you don't have any active ticket! ")
         user.listAllTickets()
         id = int(input('Which ticket do you want to cancel?(enter ticket #) '))
         user.cancelTicket(id, self.db.businessOwners)

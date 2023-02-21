@@ -158,7 +158,7 @@ class Ticket:
         print (tabulate(info, headers=header))
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print(f'Total Price: {total} CAD') 
-        return "Seat Booking Platform"
+        return total
     
 
 class Resale:
@@ -170,6 +170,9 @@ class Resale:
         self.discount = discount
 
     def printResale(self):
-        self.ticket.printTicket()
+        total = self.ticket.printTicket()
+        afterDiscount = total*(1-self.discount)
+        print(f'Discount Ratio: {self.discount}') 
+        print(f'Price After discount: {afterDiscount} CAD') 
         return "Seat Booking Platform"
         
