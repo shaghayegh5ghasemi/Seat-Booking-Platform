@@ -1,18 +1,20 @@
 import numpy as np
 import math
 from tabulate import tabulate
+import pprint
 
 class Account:
     def __init__(self, username, password) -> None:
         self.username = username
         self.password = password
         self.messages = {}
-    
-    def sendMsg(self, db, accountList, destUsername, msg):
-        pass
 
     def viewMsg(self):
-        pass
+        messages = self.messages
+        if len(messages) == 0:
+            print("Your inbox is empty!")
+        else:
+            pprint.pprint(messages)
 
 class Admin(Account):
     def __init__(self, username, password) -> None:
@@ -28,11 +30,11 @@ class User(Account):
         self.tickets = []
     
     def reserve(self, room, rows, columns):
-        seatPrice = []
+        seatPrice = [] # contain price of each seat reserved by user
         for i in range(len(rows)):
-            seatPrice.append(room.price[rows[i], columns[i]])
+            seatPrice.append(room.price[rows[i], columns[i]]) 
 
-        ticket = Ticket(self.username, room.ownerID, room.roomType, rows, columns, seatPrice, room.timeSlot)
+        ticket = Ticket(self.username, room.ownerID, room.roomType, rows, columns, seatPrice, room.date, room.timeSlot)
         self.tickets.append(ticket)
         return ticket
 
@@ -43,21 +45,18 @@ class User(Account):
             print("**************************************************************************************************************")
 
     def resellTicket(self, ticket):
-        self.tickets.remove(ticket)
+        self.tickets.remove(ticket) # the ticket won't be active for the user anymore, still won't be any refund
 
     def cancelTicket(self, i, businessOwners):
         ticket = self.tickets[i]
-        for business in businessOwners:
+        for business in businessOwners: # update the vacancy of the room after a cancelation
             if ticket.businessOwnerID == business.username:
                 for room in business.rooms:
-                    if ticket.roomType == room.roomType:
+                    if ticket.roomType == room.roomType and ticket.date == room.date and ticket.timeSlot == room.timeSlot:
                         room.updateVacancy(ticket.rows, ticket.columns, 0)
         del self.tickets[i]
 
     def exchangeTicket(self):
-        pass
-
-    def listAccounts(self):
         pass
 
     def updateBalance(self, amount, flag):
@@ -75,21 +74,26 @@ class BusinessOwner(Account):
         self.revenue = 0
         self.rooms = []
     
-    def defineRoom(self, roomType, size, regularPrice, timeSlot):
-        newRoom = Room(self.username, roomType, size, regularPrice, timeSlot)
+    def defineRoom(self, roomType, size, regularPrice, date, timeSlot):
+        newRoom = Room(self.username, roomType, size, regularPrice, date, timeSlot)
         self.rooms.append(newRoom)
     
     def updateRevenue(self, price):
         self.revenue = self.revenue + price
 
+    def viewRevenue(self):
+        print(f"Your revenue until now is: {self.revenue}")
+
+
 class Room:
-    def __init__(self, ownerID, roomType, size, regularPrice, timeSlot) -> None:
+    def __init__(self, ownerID, roomType, size, regularPrice, date, timeSlot) -> None:
         self.ownerID = ownerID
         self.roomType = roomType 
         self.size = size
         self.regularPrice = regularPrice
         self.map = np.zeros((self.size, self.size), dtype=int)
         self.price = self.applyPrice()
+        self.date = date
         self.timeSlot = timeSlot
 
     def applyPrice(self):
@@ -124,18 +128,19 @@ class Room:
         return f"Map of the {self.roomType} - {self.ownerID}"
 
 class Ticket:
-    def __init__(self, ticketID, businessOwnerID, roomType, rows, columns, seatPrice, timeSLot) -> None:
+    def __init__(self, ticketID, businessOwnerID, roomType, rows, columns, seatPrice, date, timeSLot) -> None:
         self.ticketID = ticketID # ticket owner
         self.businessOwnerID = businessOwnerID # business owner
         self.roomType = roomType
         self.rows = rows
         self.columns = columns
         self.seatPrice = seatPrice
+        self.date = date
         self.timeSlot = timeSLot
 
     def ticketInfo(self):
         info = []
-        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Time Slot", "Price"]
+        header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Date", "Time Slot", "Price"]
         total = 0
         for i in range(len(self.rows)):
             temp = []
@@ -144,7 +149,8 @@ class Ticket:
             temp.append(self.businessOwnerID) 
             temp.append(self.roomType) 
             temp.append(self.rows[i]) 
-            temp.append(self.columns[i]) 
+            temp.append(self.columns[i])
+            temp.append(self.date) 
             temp.append(self.timeSlot) 
             temp.append(self.seatPrice[i])
             total = total + self.seatPrice[i]
@@ -158,7 +164,7 @@ class Ticket:
         print (tabulate(info, headers=header))
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print(f'Total Price: {total} CAD') 
-        return "Seat Booking Platform"
+        return total
     
 
 class Resale:
@@ -170,6 +176,9 @@ class Resale:
         self.discount = discount
 
     def printResale(self):
-        self.ticket.printTicket()
+        total = self.ticket.printTicket()
+        afterDiscount = total*(1-self.discount)
+        print(f'Discount Ratio: {self.discount}') 
+        print(f'Price After discount: {afterDiscount} CAD') 
         return "Seat Booking Platform"
         
