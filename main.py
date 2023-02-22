@@ -3,7 +3,6 @@ import getpass
 import os
 from time import sleep
 from tabulate import tabulate
-import pprint
 
 import database
 import system
@@ -13,7 +12,7 @@ class Application:
         self.db = database.Database().loadDB() # load database 
         # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
         self.eligibility = [['1. Sign out', '2. View messages', '3. Send message', '4. Cancel User Ticket'], 
-                    ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room'], 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room', '5. View revenue of the business'], 
                     ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', 
                     '5. List all resale tickets', '6. List all business owners', '7. List all system users', '8. Reserve', '9. Resell a ticket',
                      '10. Cancel a ticket', '11. Exchange a ticket', '12. Update Balance']] 
@@ -65,13 +64,6 @@ class Application:
         seatBookingApp.db.saveDB(self.db)
         print("Thank you for choosing our platform! :)")
         exit()
-    
-    def viewMessage(self, account): # 2. view messages 
-        messages = account.messages
-        if len(messages) == 0:
-            print("Your inbox is empty!")
-        else:
-            pprint.pprint(messages)
 
     def sendMessage(self, account, accountType): # 3. send a message
         senderAccount = ""
@@ -137,15 +129,16 @@ class Application:
         roomType = input('What business do you want this room for (Businees Type)? ')
         size = int(input('What is the desired size of the room? '))
         regularPrice = float(input('What is the regular price for seats? '))
-        timeSlot = input('What time slot will this room be available? (example of accepted answer: 2:30-4:05) ')
-        businessOwner.defineRoom(roomType, size, regularPrice, timeSlot)
+        date = input('What date will this room be available? (example of accepted answer: 2023-02-06) ')
+        timeSlot = input('What time slot will this room be available? (example of accepted answer: 12:30-14:05) ')
+        businessOwner.defineRoom(roomType, size, regularPrice, date, timeSlot)
 
     # features for users
     def listRooms(self): # 4. list all rooms
         businessList = self.db.businessOwners
         allRoomObjects = []
         allRooms = []
-        header = ["Room #", "Business Owner", "Room Type", "Regular Price", "Time Slot"]
+        header = ["Room #", "Business Owner", "Room Type", "Regular Price", "Date", "Time Slot"]
 
         i = 0
         for business in businessList:
@@ -155,6 +148,7 @@ class Application:
                 temp.append(room.ownerID)
                 temp.append(room.roomType)
                 temp.append(room.regularPrice)
+                temp.append(room.date)
                 temp.append(room.timeSlot)
                 allRooms.append(temp)
                 allRoomObjects.append(room)
@@ -193,6 +187,11 @@ class Application:
             info.append(temp)
         print (tabulate(info, headers=header))
 
+    def checkDate(self, date1, date2): # same date returns True
+        if date1 == date2:
+            return True
+        return False
+
     def toMin(self, timeSlot): # convert hh:mm input format to an integer that show which min from midnight!
         s, e = timeSlot.split('-')
         sHour, sMin = s.split(':')
@@ -219,12 +218,13 @@ class Application:
         
         return overlap     
 
-    def checkTicketTimeSlot(self, newReservation, previousReservations): # check if a new reservation has overlap with previous reservations
+    def checkTicketTimeSlot(self, newReservationDate, newReservationTime, previousReservations): # check if a new reservation has overlap with previous reservations
         overlap = False
-        for t in previousReservations:
-            if self.checkTimeOverlap(newReservation, t.timeSlot):
-                overlap = True
-                break
+        for pr in previousReservations:
+            if self.checkDate(newReservationDate, pr.date): # same date
+                if self.checkTimeOverlap(newReservationTime, pr.timeSlot):
+                    overlap = True
+                    break
         
         return overlap
 
@@ -251,8 +251,8 @@ class Application:
                 return 
         
         # check time slot
-        if self.checkTicketTimeSlot(desiredRoom.timeSlot, user.tickets):
-            print("The time slot of new reservation has overlap with your precious reservations! Please try again.")
+        if self.checkTicketTimeSlot(desiredRoom.date ,desiredRoom.timeSlot, user.tickets):
+            print("The date and time slot of new reservation has overlap with your previous reservations! Please try again.")
             return
     
         # check balance
@@ -340,7 +340,7 @@ if __name__ == "__main__":
                 case 1: # sign out
                     seatBookingApp.signOut()
                 case 2: # view messages
-                    seatBookingApp.viewMessage(account)
+                    account.viewMsg()
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # cancel user ticket
@@ -352,11 +352,13 @@ if __name__ == "__main__":
                 case 1: # sign out
                     seatBookingApp.signOut()
                 case 2: # view messages
-                    seatBookingApp.viewMessage(account)
+                    account.viewMsg()
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # define a new room
                     seatBookingApp.registerRoom(account)
+                case 5: # view the revenue
+                    account.viewRevenue()
         else: # user domain
             choice = int(input('\n'.join(seatBookingApp.eligibility[2])))
             print()
@@ -364,7 +366,7 @@ if __name__ == "__main__":
                 case 1: # sign out
                     seatBookingApp.signOut()
                 case 2: # view messages
-                    seatBookingApp.viewMessage(account)
+                    account.viewMsg()
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # list all rooms
