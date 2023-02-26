@@ -62,9 +62,4 @@ class Database:
     def saveDB(self, db):    
         with open("database_file.pickle", "wb") as dbFile: # save recent changes to db before sign out
             pickle.dump(db, dbFile)
-    
-    def addResale(self):
-        pass
 
-    def removeResela(self):
-        pass

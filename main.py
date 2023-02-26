@@ -281,7 +281,7 @@ class Application:
             # update business owner revenue
             for business in self.db.businessOwners:
                 if business.username == desiredRoom.ownerID:
-                    business.updateRevenue(totalPrice)
+                    business.updateRevenue(totalPrice, 'deposit')
     
             user.updateBalance(totalPrice, 'withdrawal') # update user balance
         else:
@@ -336,6 +336,74 @@ class Application:
         user.cancelTicket(id, self.db.businessOwners)
         print("Ticket successfully canceled! :)")
 
+    def exchangeTicekt(self, user): # 12. exchange a ticket
+        # first user should choose among him/her tickets
+        user.listAllTickets()
+        id = int(input('Which ticket do you want to exchange?(enter ticket #) '))
+        ticket = user.tickets[id]
+        ticketRoom = None
+
+        for business in self.db.businessOwners: # find the room correspond to the ticket
+            if business.username == ticket.businessOwnerID:
+                for room in business.rooms:
+                    if room.roomType == ticket.roomType:
+                        ticketRoom = room
+
+        ticketRoom.showMap()
+
+        newRows = []
+        newColumns = []
+        for i in range(len(ticket.rows)):
+            row, column = input(f'Enter the row and column of seat # {i}: (example: 3,4)' ).split(',')
+            newRows.append(int(row))
+            newColumns.append(int(column))
+
+        # check vacancy
+        for i in range(len(newRows)):
+            if newRows[i] == ticket.rows[i] and newColumns[i] == ticket.columns[i]: # if the user wants one of its previous seats don't show this error
+                continue
+            elif ticketRoom.map[newRows[i], newColumns[i]] == 1:
+                print("You can't change your ticket with these seats. The selected seats have already been reserved! Please try again.")
+                return
+        
+            
+        newTicket = user.reserve(ticketRoom, newRows, newColumns)
+        # check price difference and balance
+        previousPrice = ticket.calculateTotal()
+        newPrice = newTicket.calculateTotal()
+
+        if newPrice == previousPrice:
+            print("The ticket changed successfully! Your new receipts: ")
+            newTicket.printTicket()
+            del user.tickets[id] # replace the new ticket with previous one
+        elif newPrice > previousPrice:
+            if newPrice-previousPrice <= user.balance:
+                print(f"The ticket changed successfully! {newPrice-previousPrice} was withdrawn from your balance. Your receipts: ")
+                newTicket.printTicket()
+                del user.tickets[id] # replace the new ticket with previous one
+                # update business owner revenue
+                for business in self.db.businessOwners:
+                    if business.username == ticketRoom.ownerID:
+                        business.updateRevenue(newPrice-previousPrice, 'deposit')
+        
+                user.updateBalance(newPrice-previousPrice, 'withdrawal') # update user balance
+            else:
+                print(f"You don't have enough balance for this transaction! Please try again. (Total: {newPrice-previousPrice}, Your current balance: {user.balance})")
+                user.tickets.pop() # new tickets was added, so we need to remove it
+                return
+        elif newPrice < previousPrice:
+            # update business owner revenue
+            for business in self.db.businessOwners:
+                if business.username == ticketRoom.ownerID:
+                    business.updateRevenue(previousPrice-newPrice, 'withdrawal') 
+            user.updateBalance(previousPrice-newPrice, 'deposit') # update user balance
+            print(f"The ticket changed successfully! {previousPrice-newPrice} was deposited to your balance. Your new receipts: ")
+            newTicket.printTicket()
+            del user.tickets[id] # replace the new ticket with previous one
+        
+        ticketRoom.updateVacancy(ticket.rows, ticket.columns, 0) # empty the seats in previous ticket
+        ticketRoom.updateVacancy(newRows, newColumns, 1) # fill the seats in room map
+
     def userUpdateBalance(self, user): # 13. update balance
         print(f"Your current balance is: {user.balance}")
         choice = int(input("What do you want to do with your balance? 1. Deposit 2. Withdrawal \n"))
@@ -350,8 +418,9 @@ class Application:
 
 if __name__ == "__main__":
     seatBookingApp = Application()
-    # msg = seatBookingApp.db.businessOwners[1].messages
-    # print(msg)
+    # tickets = seatBookingApp.db.users[1].tickets
+    # print(tickets[0].seatPrice)
+    # print(tickets[0].calculateTotal())
     # exit()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
@@ -360,9 +429,11 @@ if __name__ == "__main__":
     # each user based on the accountType have different elligibilities    
     while(True):
         print()
-        print('What do you wish to do?')
         choice = 0
         if accountType == 1: # admin domain
+            print(f'Admin pannel: {account.username}')
+            print()
+            print('What do you wish to do?')
             choice = int(input('\n'.join(seatBookingApp.eligibility[0])))
             print()
             match choice:
@@ -375,6 +446,10 @@ if __name__ == "__main__":
                 case 4: # cancel user ticket
                     pass
         elif accountType == 2: # business owner domain
+            print(f"{account.username}'s profile :)")
+            print(f"Revenue: {account.revenue}")
+            print()
+            print('What do you wish to do?')
             choice = int(input('\n'.join(seatBookingApp.eligibility[1])))
             print()
             match choice:
@@ -389,6 +464,10 @@ if __name__ == "__main__":
                 case 5: # view the revenue
                     account.viewRevenue()
         else: # user domain
+            print(f"{account.username}'s profile :)")
+            print(f"balance: {account.balance}")
+            print()
+            print('What do you wish to do?')
             choice = int(input('\n'.join(seatBookingApp.eligibility[2])))
             print()
             match choice:
@@ -415,7 +494,7 @@ if __name__ == "__main__":
                 case 11: # cancel a ticket
                     seatBookingApp.userCancelTicket(account) 
                 case 12: # exchange a ticket
-                    pass
+                    seatBookingApp.exchangeTicekt(account)
                 case 13: # update balance
                     seatBookingApp.userUpdateBalance(account)
 

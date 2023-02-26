@@ -78,8 +78,11 @@ class BusinessOwner(Account):
         newRoom = Room(self.username, roomType, size, regularPrice, date, timeSlot)
         self.rooms.append(newRoom)
     
-    def updateRevenue(self, price):
-        self.revenue = self.revenue + price
+    def updateRevenue(self, price, flag):
+        if flag == 'deposit':
+            self.revenue = self.revenue + price
+        elif flag == 'withdrawal':
+            self.revenue = self.revenue - price
 
     def viewRevenue(self):
         print(f"Your revenue until now is: {self.revenue}")
@@ -158,10 +161,11 @@ class Ticket:
         return info, header
 
     def calculateTotal(self):
-        total = 0
-        for i in range(len(self.rows)):
-            total = total + self.seatPrice[i]
-            return total
+        # total = 0
+        # for i in range(len(self.rows)):
+        #     total = total + self.seatPrice[i]
+        #     return total
+        return sum(self.seatPrice)
 
     def printTicket(self):
         total = self.calculateTotal()
