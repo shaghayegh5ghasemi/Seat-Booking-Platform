@@ -12,10 +12,10 @@ class Application:
         self.db = database.Database().loadDB() # load database 
         # index 0 for admin (accountType = 1), index 1 for business owner (accountType = 2), index 2 for user (accountType = 3)
         self.eligibility = [['1. Sign out', '2. View messages', '3. Send message', '4. Cancel User Ticket'], 
-                    ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room', '5. View revenue of the business'], 
+                    ['1. Sign out', '2. View messages', '3. Send message', '4. Define a room', '5. View my rooms'], 
                     ['1. Sign out', '2. View messages', '3. Send message', '4. List all rooms', 
                     '5. List all resale tickets', '6. List all business owners', '7. List all system users', '8. Reserve', '9. Buy a resale ticket' ,
-                    '10. Resell a ticket', '11. Cancel a ticket', '12. Exchange a ticket', '13. Update Balance']] 
+                    '10. Resell a ticket', '11. Cancel a ticket', '12. Exchange a ticket', '13. Update Balance', '14. List my tickets']] 
 
     def welcomeMsg(self, n, m):
         for i in range(1,n,2):
@@ -139,18 +139,22 @@ class Application:
         account.viewMsg()
         sources = list(account.messages.keys())
         messages = list(account.messages.values())
+        flag = 0
 
         for i in range(len(messages)):
             if ":" in messages[i]:
                 msgSplit = messages[i].split(":")
                 if msgSplit[0] == "cancel":
+                    flag += 1
                     srcSplit = sources[i].split(":")
                     for user in self.db.users:
                         if user.username == srcSplit[1]:
                             user.cancelTicket(int(msgSplit[1]), self.db.businessOwners)
                             del account.messages[sources[i]] # remove the cancel msg
-        
-        print("All cancel requests was handled! :)")                   
+        if flag == 0:
+            print("There was no request to cancel a ticket.")
+        else:
+            print(f"{flag} cancel requests was handled! :)")                   
 
     # features for business owners
     def registerRoom(self, businessOwner):
@@ -193,8 +197,8 @@ class Application:
             print("There is no resale offer!")
             return
         for i in range(len(allResaleTickets)):
-            print(f'Resale # {i}: ')
-            allResaleTickets[i].printResale()
+            print(f'Resale ticket # {i}: ')
+            allResaleTickets[i].printTicket()
             print()
 
     def listBusinessOwners(self): # 6. list all business owners
@@ -323,38 +327,37 @@ class Application:
         resale = self.db.resale[id]
 
         # check date and time overlap
-        if self.checkTicketTimeSlot(resale.ticket.date ,resale.ticket.timeSlot, user.tickets):
+        if self.checkTicketTimeSlot(resale.date ,resale.timeSlot, user.tickets):
             print("The date and time slot of new reservation has overlap with your previous reservations! Please try again.")
             return
-
         # check balance
         totalPrice = resale.calculateNewPrice()
         if totalPrice <= user.balance:
             # add resale ticket to buyer ticket list
-            resale.ticket.changeID(user.username)
-            user.tickets.append(resale.ticket) # add to buyer tickets
+            for seller in self.db.users:
+                if seller.username == resale.ticketID:
+                    seller.updateBalance(totalPrice, 'deposit') # update seller balance
+            resale.changeID(user.username)
+            user.tickets.append(resale) # add to buyer tickets
             print("Reservation Completed! Your receipts: ")
-            resale.ticket.printTicket()
-            print(f"Price after discount: {totalPrice}")
-            
-            resale.seller.updateBalance(totalPrice, 'deposit') # update seller balance
+            resale.printTicket()
+
             user.updateBalance(totalPrice, 'withdrawal') # update user balance
-            
             self.db.resale.remove(resale) # remove from resale ticket
         else:
-            print(f"You don't have enough balance for this transaction! Please try again. (Total: {resale.newPrice}, Your current balance: {user.balance})")
+            print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return
 
 
     def userResellTicket(self, user): # 10. resell a ticket
         user.listAllTickets()
         id = int(input('Which ticket do you want to resell?(enter ticket #) '))
-        ticket = user.tickets[id]                  
+        resaleTicket = user.tickets[id]                  
         discount = float(input("What do you offer as a discount ratio? "))
-        resaleTicket = system.Resale(ticket, user, discount)
+        resaleTicket.discount = discount
         self.sendToAll(user)
         self.db.resale.append(resaleTicket) # add the ticket to resale list
-        user.resellTicket(ticket) # remove the ticket from user's active tickets
+        user.resellTicket(resaleTicket) # remove the ticket from user's active tickets
         print("Ticket successfully added to resale list! :)")
 
     def userCancelTicket(self, user): # 11. cancel a ticket
@@ -447,10 +450,6 @@ class Application:
 
 if __name__ == "__main__":
     seatBookingApp = Application()
-    # tickets = seatBookingApp.db.users[1].tickets
-    # print(tickets[0].seatPrice)
-    # print(tickets[0].calculateTotal())
-    # exit()
     seatBookingApp.welcomeMsg(n=5, m=25) #  welcome pattern 
     
     accountType, account = seatBookingApp.signIn() # sign in 
@@ -490,8 +489,8 @@ if __name__ == "__main__":
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # define a new room
                     seatBookingApp.registerRoom(account)
-                case 5: # view the revenue
-                    account.viewRevenue()
+                case 5: # view rooms
+                    account.printRooms()
         else: # user domain
             print(f"{account.username}'s profile :)")
             print(f"balance: {account.balance}")
@@ -526,6 +525,8 @@ if __name__ == "__main__":
                     seatBookingApp.exchangeTicekt(account)
                 case 13: # update balance
                     seatBookingApp.userUpdateBalance(account)
+                case 14: # list account's tickets
+                    account.listAllTickets()
 
 
 
