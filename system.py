@@ -161,10 +161,6 @@ class Ticket:
         return info, header
 
     def calculateTotal(self):
-        # total = 0
-        # for i in range(len(self.rows)):
-        #     total = total + self.seatPrice[i]
-        #     return total
         return sum(self.seatPrice)
 
     def printTicket(self):

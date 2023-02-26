@@ -77,7 +77,7 @@ class Application:
         choice = int(input("What is the account type of the user you wish to communicate with? 1. Admin 2. Business Owner 3. User \n"))
         match choice:
             case 1:
-                request = int(input("What is your request? 1. Complaint 2. Support\n"))
+                request = int(input("What is your request? 1. Complaint 2. Support (cancel a ticket)\n"))
                 if request == 1:
                     msg = input("What is your message? ")
                     src = senderAccount + account.username # source of message
@@ -87,7 +87,19 @@ class Application:
 
                     print(f"Message successfully was sent to Admin! :)")
                 else:
-                    pass # other management stuff that an admin can do
+                    if accountType == 1 or accountType == 2:
+                        print("This feature is only for customers.")
+                        return
+                    # other management stuff that an admin can do
+                    if len(account.tickets) == 0:
+                        print("Currently you don't have any active ticket! ")
+                    account.listAllTickets()
+                    cancelID = int(input("Which ticket do you want to be canceled? (enter ticket #): "))
+                    src = senderAccount + account.username # source of message
+                    dest = self.db.admin[0].messages # the inbox message of the destination
+                    msg = "cancel:"+ str(cancelID)
+                    dest[src] = msg # dictionary key = source of msg, dictionary value = message
+                    print("Message successfully was sent to Admin! :)")
             case 2:
                 self.listBusinessOwners()
                 id = int(input("Who do you want to send a message? "))
@@ -122,6 +134,23 @@ class Application:
             user.messages[src] = msg
 
 
+    # features for admin
+    def adminCancelTicket(self, account):
+        account.viewMsg()
+        sources = list(account.messages.keys())
+        messages = list(account.messages.values())
+
+        for i in range(len(messages)):
+            if ":" in messages[i]:
+                msgSplit = messages[i].split(":")
+                if msgSplit[0] == "cancel":
+                    srcSplit = sources[i].split(":")
+                    for user in self.db.users:
+                        if user.username == srcSplit[1]:
+                            user.cancelTicket(int(msgSplit[1]), self.db.businessOwners)
+                            del account.messages[sources[i]] # remove the cancel msg
+        
+        print("All cancel requests was handled! :)")                   
 
     # features for business owners
     def registerRoom(self, businessOwner):
@@ -444,7 +473,7 @@ if __name__ == "__main__":
                 case 3: # send message
                     seatBookingApp.sendMessage(account, accountType)
                 case 4: # cancel user ticket
-                    pass
+                    seatBookingApp.adminCancelTicket(account)
         elif accountType == 2: # business owner domain
             print(f"{account.username}'s profile :)")
             print(f"Revenue: {account.revenue}")
