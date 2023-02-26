@@ -78,8 +78,11 @@ class BusinessOwner(Account):
         newRoom = Room(self.username, roomType, size, regularPrice, date, timeSlot)
         self.rooms.append(newRoom)
     
-    def updateRevenue(self, price):
-        self.revenue = self.revenue + price
+    def updateRevenue(self, price, flag):
+        if flag == 'deposit':
+            self.revenue = self.revenue + price
+        elif flag == 'withdrawal':
+            self.revenue = self.revenue - price
 
     def viewRevenue(self):
         print(f"Your revenue until now is: {self.revenue}")
@@ -141,7 +144,6 @@ class Ticket:
     def ticketInfo(self):
         info = []
         header = ["Seat #", "Username", "Business Owner", "Room Type", "Row", "Column", "Date", "Time Slot", "Price"]
-        total = 0
         for i in range(len(self.rows)):
             temp = []
             temp.append(i) 
@@ -153,32 +155,40 @@ class Ticket:
             temp.append(self.date) 
             temp.append(self.timeSlot) 
             temp.append(self.seatPrice[i])
-            total = total + self.seatPrice[i]
             
             info.append(temp)
         
-        return info, header, total
+        return info, header
+
+    def calculateTotal(self):
+        return sum(self.seatPrice)
 
     def printTicket(self):
-        info, header, total = self.ticketInfo()
+        total = self.calculateTotal()
+        info, header = self.ticketInfo()
         print (tabulate(info, headers=header))
-        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print(f'Total Price: {total} CAD') 
-        return total
     
+    def changeID(self, newTicketID):
+        self.ticketID = newTicketID
 
 class Resale:
-    def __init__(self, ticket, businessOwner, room, seller, discount) -> None:
+    def __init__(self, ticket, seller, discount) -> None:
         self.ticket = ticket
-        self.businessOwner = businessOwner
-        self.room = room
         self.seller = seller
         self.discount = discount
 
+    def calculateNewPrice(self):
+        before = self.ticket.calculateTotal()
+        new = (1-self.discount)
+        new = before*new
+        return float(new)
+
     def printResale(self):
-        total = self.ticket.printTicket()
-        afterDiscount = total*(1-self.discount)
+        price = self.calculateNewPrice()
+        self.ticket.printTicket()
         print(f'Discount Ratio: {self.discount}') 
-        print(f'Price After discount: {afterDiscount} CAD') 
+        print(f'Price After discount: {price} CAD') 
         return "Seat Booking Platform"
         
