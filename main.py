@@ -132,8 +132,7 @@ class Application:
             business.messages[src] = msg
         for user in self.db.users: # send to all users
             user.messages[src] = msg
-
-
+            
     # features for admin
     def adminCancelTicket(self, account):
         account.viewMsg()
@@ -347,7 +346,6 @@ class Application:
         else:
             print(f"You don't have enough balance for this transaction! Please try again. (Total: {totalPrice}, Your current balance: {user.balance})")
             return
-
 
     def userResellTicket(self, user): # 10. resell a ticket
         user.listAllTickets()
