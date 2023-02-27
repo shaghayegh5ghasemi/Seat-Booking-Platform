@@ -37,7 +37,7 @@ class Application:
         newAccount = self.db.exist(accountType, username) # check if the user already exists or no
         if newAccount == False:
             if accountType == 1:
-                newUser = system.Admin(username, password)
+                newUser = system.Account(username, password)
                 account = newUser
                 self.db.addAccount(accountType, newUser)
             elif accountType == 2:

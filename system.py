@@ -16,13 +16,6 @@ class Account:
         else:
             pprint.pprint(messages)
 
-class Admin(Account):
-    def __init__(self, username, password) -> None:
-        super().__init__(username, password)
-    
-    def cancelUserTicket(self):
-        pass
-
 class User(Account):
     def __init__(self, username, password, balance) -> None:
         super().__init__(username, password)
